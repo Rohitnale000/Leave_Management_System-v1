@@ -36,49 +36,54 @@ exports.createLeaveApplicationService = async (bodyData) => {
     }
 
     if (iCnt === 1) {
-        if(queryResult[0].dataValues.sick_leave>=difference){
-              flag = true;
-        }else{
-          flag = false
-        }
+      if (queryResult[0].dataValues.sick_leave >= difference) {
+        flag = true;
+      } else {
+        flag = false;
+      }
     }
     if (iCnt === 2) {
-      if (bodyData.type_of_day === "Full Day" || bodyData.type_of_day==="Half Day") {
-        if(queryResult[0].dataValues.casual_leave>=difference){
-              flag = true;
-        }else{
-          flag = false
+      if (
+        bodyData.type_of_day === "Full Day" ||
+        bodyData.type_of_day === "Half Day"
+      ) {
+        if (queryResult[0].dataValues.casual_leave >= difference) {
+          flag = true;
+        } else {
+          flag = false;
         }
       }
     }
     if (iCnt === 3) {
-      if (bodyData.type_of_day === "Full Day" || bodyData.type_of_day==="Half Day") {
-        if(queryResult[0].dataValues.paid_leave>=difference){
-              flag = true;
-        }else{
-          flag = false
+      if (
+        bodyData.type_of_day === "Full Day" ||
+        bodyData.type_of_day === "Half Day"
+      ) {
+        if (queryResult[0].dataValues.paid_leave >= difference) {
+          flag = true;
+        } else {
+          flag = false;
         }
       }
     }
 
     console.log(flag);
 
-    if(flag){
-        const applicationResult = applicationDetailsDb.create({
-      from_date: bodyData.from_date,
-      to_date: bodyData.to_date,
-      type_of_leave: bodyData.type_of_leave,
-      type_of_day: bodyData.type_of_day,
-      reason: bodyData.reason,
-      no_of_leave: difference,
-      emp_id: bodyData.emp_id,
-      reporting_manager_email: bodyData.reporting_manager_email,
-    });
-    return true;
-    }else{
-      return false
+    if (flag) {
+      const applicationResult = applicationDetailsDb.create({
+        from_date: bodyData.from_date,
+        to_date: bodyData.to_date,
+        type_of_leave: bodyData.type_of_leave,
+        type_of_day: bodyData.type_of_day,
+        reason: bodyData.reason,
+        no_of_leave: difference,
+        emp_id: bodyData.emp_id,
+        reporting_manager_email: bodyData.reporting_manager_email,
+      });
+      return true;
+    } else {
+      return false;
     }
-    
   } catch (error) {
     console.log(error);
   }
@@ -115,7 +120,7 @@ exports.getLeaveApplicationsService = async (page, limit, paramsEmail) => {
 //   where:{reporting_manager_email: paramsEmail}
 // })
 
-exports.approveLeaveService = async (bodyData) => {
+exports.approveLeaveService = async (bodyData, paramsId) => {
   let iCnt = 0;
   let totalLeave = 0;
   let totalNoOfLeave = 0;
@@ -330,15 +335,14 @@ exports.rejectLeaveService = async (paramsId) => {
   }
 };
 
-
-exports.getLeaveStatusService=async(paramsId)=>{
-    try {
-      const queryResult= await applicationDetailsDb.findAll({
-        where:{emp_id: paramsId}
-      })
-      console.log(queryResult.dataValues);
-      return queryResult
-    } catch (error) {
-      console.log(error);
-    }
-}
+exports.getLeaveStatusService = async (paramsId) => {
+  try {
+    const queryResult = await applicationDetailsDb.findAll({
+      where: { emp_id: paramsId },
+    });
+    console.log(queryResult.dataValues);
+    return queryResult;
+  } catch (error) {
+    console.log(error);
+  }
+};

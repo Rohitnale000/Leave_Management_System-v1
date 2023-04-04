@@ -35,4 +35,8 @@
   <Route path="/leave-status">
     <LeaveStatus/>
   </Route>
+  <Route path="/create-employee">
+    <CreateEmployee/>
+  </Route>
 </Router>
+

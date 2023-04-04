@@ -43,24 +43,29 @@ exports.createNewEmployeeService = async (bodyData) => {
 
 //my profile update api
 exports.updateEmployeeService = async (paramsId, bodyData) => {
-  const hash = bcrypt.hashSync(bodyData.emp_password, saltRounds);
-  bodyData.emp_password = hash;
-  const updateEmployeeResult = await employeeDetailsDb.update(
-    {
-      first_name: bodyData.first_name,
-      last_name: bodyData.last_name,
-      gender: bodyData.gender,
-      date_of_birth: bodyData.date_of_birth,
-      contact_no: bodyData.contact_no,
-      emp_password: bodyData.emp_password,
-    },
-    {
-      where: { emp_id: paramsId, status: "Active", emp_role: "Employee" },
-    }
-  );
-  const resultInArray = updateEmployeeResult[0];
+  // const hash = bcrypt.hashSync(bodyData.emp_password, saltRounds);
+  // bodyData.emp_password = hash;
+  try {
+    const updateEmployeeResult = await employeeDetailsDb.update(
+      {
+        first_name: bodyData.first_name,
+        last_name: bodyData.last_name,
+        gender: bodyData.gender,
+        date_of_birth: bodyData.date_of_birth,
+        contact_no: bodyData.contact_no,
+        email_id: bodyData.email_id,
+        //emp_password: bodyData.emp_password,
+      },
+      {
+        where: { emp_id: paramsId, status: "Active", emp_role: "Employee" },
+      }
+    );
+    const resultInArray = updateEmployeeResult[0];
 
-  return resultInArray;
+    return resultInArray;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.searchEmployeeService = async (paramsEmail) => {
@@ -122,23 +127,69 @@ exports.updateEmployeeInfoService = async (paramsId, bodyData) => {
     }
   );
   const resultInArray = queryResult[0];
-   // console.log(queryResult);
+  // console.log(queryResult);
   return resultInArray;
 };
 
-
-exports.deleteEmployeeService =async(paramsId,bodyData)=>{
+exports.deleteEmployeeService = async (paramsId, bodyData) => {
   try {
     const queryResult = await employeeDetailsDb.update(
-      { status: "Inactive",reason_for_delete:bodyData.reason_for_delete },
+      { status: "Inactive", reason_for_delete: bodyData.reason_for_delete },
       { where: { emp_id: paramsId } }
     );
     const resultInArray = queryResult[0];
     console.log(resultInArray);
-   return resultInArray;
-   
+    return resultInArray;
   } catch (error) {
     console.log(error);
   }
-}
+};
 
+exports.changePasswordService = async (paramsId, bodyData) => {
+  try {
+    const queryResult = await employeeDetailsDb.findAll({
+      where: {
+        status: "Active",
+        emp_id: paramsId,
+      },
+    });
+    let result = queryResult[0].dataValues.emp_password;
+    //compare old password and new password
+    const passwordMatchResult = await bcrypt.compare(
+      bodyData.old_password,
+      result
+    );
+    //if it is true then change new password
+    if (passwordMatchResult === true) {
+      const hash = bcrypt.hashSync(bodyData.new_password, saltRounds);
+      const updatePasswordResult = await employeeDetailsDb.update(
+        {
+          emp_password: hash,
+        },
+        {
+          where: { emp_id: paramsId, status: "Active" },
+        }
+      );
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//get single employee
+exports.getSingleEmployeeService = async (paramsId) => {
+  try {
+    const queryResult = await employeeDetailsDb.findAll({
+      where: {
+        status: "Active",
+        emp_id: paramsId,
+      },
+    });
+    return queryResult;
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -1,6 +1,6 @@
-<script>
+    <script>
     import { onMount } from "svelte";
-    import { navigate } from "svelte-routing";
+    import { navigate } from "svelte-routing";    
     import { storeData } from "../store/store";
     import ApplyForLeave from "../controllers/employee"
     const LeaveClassObj = new ApplyForLeave()
@@ -27,7 +27,7 @@
                     <div class="col-sm-8 mb-4" style="color:green"><h2>Leave <b>Status</b></h2></div>
                     <div class="col-sm-4">
                         <div class="search-box">
-                           <button class="btn btn-primary" on:click={()=>{navigate("/employee-dashboard")}}>Back To Home</button>
+                           <!-- <button class="btn btn-primary" on:click={()=>{navigate("/employee-dashboard")}}>Back To Home</button> -->
                         </div>
                     </div>
                 </div>
@@ -58,6 +58,11 @@
                     {/each}
                 </tbody>
             </table>
+            <div class="col-sm-4">
+                <div class="search-box">
+                   <button class="btn btn-primary" on:click={()=>{navigate("/employee-dashboard")}}>Back To Home</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

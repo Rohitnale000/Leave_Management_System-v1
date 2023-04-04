@@ -5,12 +5,17 @@ const {
   employeePaginationService,
   updateEmployeeInfoService,
   deleteEmployeeService,
+  changePasswordService,
+  getSingleEmployeeService,
 } = require("../services/employee");
 const {
   allFieldValidation,
   emailAndPassValidation,
   emailValidation,
   reasonForDelete,
+  validationForMyprofile,
+  isValidDateOfBirth,
+  phoneNumber,
 } = require("../utils/validations");
 
 const createNewEmployeeData = async (req, res) => {
@@ -56,27 +61,39 @@ const createNewEmployeeData = async (req, res) => {
 };
 
 const updateEmployeeData = async (req, res) => {
-  try {
-    const result = await updateEmployeeService(req.params.id, req.body);
-    console.log(result);
-    if (result === 1) {
-      res.send({
-        success: true,
-        statusCode: 200,
-        message: "Employee detail updated successfully",
-      });
-    } else if (result === 0) {
+  const validationResult = validationForMyprofile(req.body);
+  const validationResult1 = isValidDateOfBirth(req.body.date_of_birth);
+  const validationResult2 = phoneNumber(req.body.contact_no);
+  console.log(validationResult);
+
+  if (validationResult && validationResult1 && validationResult2) {
+    try {
+      const result = await updateEmployeeService(req.params.id, req.body);
+      if (result === 1) {
+        res.send({
+          success: true,
+          statusCode: 200,
+          message: "Employee detail updated successfully",
+        });
+      } else if (result === 0) {
+        res.send({
+          success: false,
+          statusCode: 400,
+          message: "Employee Data not updated",
+        });
+      }
+    } catch (error) {
       res.send({
         success: false,
-        statusCode: 400,
-        message: "Employee Data not updated",
+        statusCode: 500,
+        message: error,
       });
     }
-  } catch (error) {
+  } else {
     res.send({
       success: false,
-      statusCode: 500,
-      message: error,
+      statusCode: 400,
+      message: "Enter valid data",
     });
   }
 };
@@ -121,7 +138,7 @@ const employeePaginationData = async (req, res) => {
         statusCode: 200,
         data: result.data1,
         message: "Employee data found successfully",
-        totalCount:result.totalCount
+        totalCount: result.totalCount,
       });
     } else {
       res.send({
@@ -170,21 +187,53 @@ const updateEmployeeDetailData = async (req, res) => {
 };
 
 const deleteEmployeeData = async (req, res) => {
-  const validationResult = reasonForDelete(req.body)
-  if(validationResult){
-  const result = await deleteEmployeeService(req.params.id,req.body);
+  const validationResult = reasonForDelete(req.body);
+  if (validationResult) {
+    const result = await deleteEmployeeService(req.params.id, req.body);
+    try {
+      if (result === 1) {
+        res.send({
+          success: true,
+          statusCode: 200,
+          message: " Employee has been deleted successfully",
+        });
+      } else if (result === 0) {
+        res.send({
+          success: false,
+          statusCode: 404,
+          message: "Employee not Found",
+        });
+      }
+    } catch (error) {
+      res.send({
+        success: false,
+        statusCode: 500,
+        message: error,
+      });
+    }
+  } else {
+    res.send({
+      success: false,
+      statusCode: 400,
+      message: "Please Enter reason for deletion",
+    });
+  }
+};
+
+const changePasswordData = async (req, res) => {
+  const result = await changePasswordService(req.params.id, req.body);
   try {
-    if (result === 1) {
+    if (result) {
       res.send({
         success: true,
         statusCode: 200,
-        message: " Employee has been deleted successfully",
+        message: "Password change successfully",
       });
-    } else if (result === 0) {
+    } else {
       res.send({
         success: false,
         statusCode: 404,
-        message: "Employee not Found",
+        message: "old password not match",
       });
     }
   } catch (error) {
@@ -194,13 +243,33 @@ const deleteEmployeeData = async (req, res) => {
       message: error,
     });
   }
-}else{
-  res.send({
-    success: false,
-    statusCode: 400,
-    message: "Please Enter reason for deletion",
-  });
-}
+};
+
+const getSingleEmployeeData = async (req, res) => {
+  const result = await getSingleEmployeeService(req.params.id);
+  console.log(result.length);
+  try {
+    if (result.length === 1) {
+      res.send({
+        success: true,
+        statusCode: 302,
+        data: result[0].dataValues,
+        message: "Employee data found successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        statusCode: 404,
+        message: "no data available",
+      });
+    }
+  } catch (error) {
+    res.send({
+      success: false,
+      statusCode: 500,
+      message: error,
+    });
+  }
 };
 
 module.exports = {
@@ -210,4 +279,6 @@ module.exports = {
   employeePaginationData,
   updateEmployeeDetailData,
   deleteEmployeeData,
+  changePasswordData,
+  getSingleEmployeeData,
 };

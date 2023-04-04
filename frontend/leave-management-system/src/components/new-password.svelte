@@ -2,20 +2,61 @@
   import { navigate } from "svelte-routing";
   import { changePassController } from "../controllers/login";
   import toast, { Toaster } from 'svelte-french-toast';
+  import { emailAndPassValidation } from "../utils";
   let newPassword = "";
   let confirmPassword = "";
   let emailId = "";
   let data = "";
 
+  let errors = { emailError: "", passwordError: "", confpassError: "" };
+  let valid = false;
+
+
+
+
+
   //function handleSubmit for handling submitted data and route that data based on different conditions//
   const handleSubmit = async () => {
+    //email validation//
+    valid = true;
+    if (emailId.length === 0) {
+      valid = false;
+      errors.emailError ="this is required field";
+    } else if (
+      !emailId.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
+    ) {
+      valid = false;
+      errors.emailError = 'Please enter a valid email';
+    } else {
+      errors.emailError = '';
+    }
+    //password validation//
+    if (newPassword.length === 0) {
+      valid = false;
+      errors.passwordError = 'this is required field';
+    } else if (
+      !newPassword.match(/^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)
+    ) {
+      valid = false;
+      errors.passwordError ='password must contain atleast(1character ,1uppercase,1lowercase,1special character and number)';
+    } else {
+      errors.emailError = '';
+    }
+    //password and confirmpassword validation//
+    if(confirmPassword !== newPassword){
+      valid= false;
+      errors.confpassError = 'passwords do not match !';
+    }else{
+      errors.confpassError='';
+    }
+    if(valid){
+    const res = await emailAndPassValidation(emailId,newPassword)
+    console.log(res);
     const result = await changePassController(
       emailId,
       newPassword,
       confirmPassword
     );
-     console.log(result);
-   
     try {
       if(result.statusCode===200){
         toast.success("You have successfully REST Your's Password")
@@ -28,8 +69,9 @@
         
       }  
     } catch (error) {
-      
+      console.log(error);
     }
+  }
   };
 </script>
 <Toaster />
@@ -43,22 +85,23 @@
           <div class="input-group">
             <input type="email" id="emailId" class="form-control" bind:value={emailId}/>
           </div>
+          <div class="error">{errors.emailError}</div>
           <!-- new password input-->
           <div class="form-group mt-4">
             <label class="form-label" for="newPassword">New Password :<span class="star">*</span></label>
             <div class="input-group">
               <input type="password" id="newPassword" class="form-control" bind:value={newPassword}/>
             </div>
-
+            <div class="error">{errors.passwordError}</div>
             <!-- confirm Password input -->
             <div class=" form-group mt-4 ">
               <label class="form-label" for="confirmPassword">Confirm Password :<span class="star">*</span></label>
               <div class="input-group">
                 <input type="password" id="loginPassword" class="form-control" bind:value={confirmPassword}/>
               </div>
-              <div class={data === 0 ? "error-div" : "none"}>Passwords do not match</div>
+              <div class="error">{errors.confpassError}</div>
               <!--Submit Button-->
-              <button type="submit" class="btn btn-primary btn-block mb-6 mt-4 pl-2 pr-3"value="login" on:click|preventDefault={handleSubmit}>SUBMIT</button>
+              <button type="submit" class="btn btn-success btn-block mb-6 mt-4 pl-2 pr-3"value="login" on:click|preventDefault={handleSubmit}>SUBMIT</button>
             </div>
           </div>
         </div>

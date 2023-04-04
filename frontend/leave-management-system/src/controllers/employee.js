@@ -3,6 +3,7 @@ import {
   applyForLeaveService,
   getEmployeeLeaveService,
   getLeaveApplicationStatusService,
+  getSingleEmployeeService,
   profileUpdateService,
 } from "../services/employee";
 
@@ -40,8 +41,19 @@ export default class ApplyForLeave {
   }
 
   async getDataFromMyProfile(allFormFields) {
+    console.log(await allFormFields);
     try {
       const result = await profileUpdateService(allFormFields);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getEmployeeData(id) {
+    try {
+      const result = await getSingleEmployeeService(id);
+      return result;
     } catch (error) {
       console.log(error);
     }

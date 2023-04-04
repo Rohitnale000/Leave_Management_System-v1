@@ -5,29 +5,48 @@ const {
   rejectLeaveService,
   getLeaveStatusService,
 } = require("../services/leave-application");
+const { dateDiffInDays } = require("../utils/datedifferance");
 
 const createLeaveApplicationData = async (req, res) => {
-  //console.log(req.body);
-  const result = await createLeaveApplicationService(req.body);
-  try {
-    if (result) {
-      res.send({
-        success: true,
-        statusCode: 201,
-        message: " you have applied leave application successfully",
-      });
-    } else {
+  let flag = false;
+  const fromDate = new Date(req.body.from_date);
+  const toDate = new Date(req.body.to_date);
+  let validationResult = await dateDiffInDays(fromDate, toDate);
+  console.log(validationResult);
+  if (validationResult >= 0) {
+    flag = true;
+  } else {
+    flag = false;
+  }
+
+  if (flag) {
+    const result = await createLeaveApplicationService(req.body);
+    try {
+      if (result) {
+        res.send({
+          success: true,
+          statusCode: 201,
+          message: " you have applied leave application successfully",
+        });
+      } else {
+        res.send({
+          success: false,
+          statusCode: 404,
+          message: "There is no leave pending",
+        });
+      }
+    } catch (error) {
       res.send({
         success: false,
-        statusCode: 404,
-        message: "There is no leave pending",
+        statusCode: 500,
+        message: error,
       });
     }
-  } catch (error) {
+  } else {
     res.send({
       success: false,
-      statusCode: 500,
-      message: error,
+      statusCode: 404,
+      message: "Please Enter Valid Date",
     });
   }
 };
@@ -63,83 +82,88 @@ const getLeaveApplicationsData = async (req, res) => {
   }
 };
 
-const approveLeaveData =async (req,res)=>{
-      const result = await approveLeaveService(req.body)
-      console.log(result);
-      try {
-        if (result) {
-          res.send({
-            success: true,
-            statusCode: 200,
-            message: "Leave Approved successfully",
-          });
-        } else {
-          res.send({
-            success: false,
-            statusCode: 400,
-            message: "No Leave Approved",
-          });
-        }
-      } catch (error) {
-        res.send({
-          success: false,
-          statusCode: 500,
-          message: error,
-        });
-      }
-}
-
-const rejectLeaveData=async(req,res)=>{
-      const result =await rejectLeaveService(req.params.id);
-      try {
-        if (result===1) {
-          res.send({
-            success: true,
-            statusCode: 200,
-            message: "Leave Rejected",
-          });
-        } else {
-          res.send({
-            success: false,
-            statusCode: 400,
-            message: "Leave Not Rejected Id not found",
-          });
-        }
-      } catch (error) {
-        res.send({
-          success: false,
-          statusCode: 500,
-          message: error,
-        });
-      }
-}
-
-
-const leaveStatusData =async (req,res)=>{
-      const result = await getLeaveStatusService(req.params.id)
-      console.log(result);
-      try {
-        if(result !== null){
-            res.send({
-                success: true,
-                statusCode: 200,
-                data: result,
-                message: "Leave-type data found successfully",
-              });
-            } else {
-              res.send({
-                success: false,
-                statusCode: 404,
-                message: "no data available",
-              });
-            }
-    } catch (error) {
-        res.send({
-            success: false,
-            statusCode: 500,
-            message: error,
-          });
+const approveLeaveData = async (req, res) => {
+  const result = await approveLeaveService(req.body, req.params.id);
+  console.log(result);
+  try {
+    if (result) {
+      res.send({
+        success: true,
+        statusCode: 200,
+        message: "Leave Approved successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        statusCode: 400,
+        message: "No Leave Approved",
+      });
     }
-}
+  } catch (error) {
+    res.send({
+      success: false,
+      statusCode: 500,
+      message: error,
+    });
+  }
+};
 
-module.exports = { createLeaveApplicationData, getLeaveApplicationsData,approveLeaveData,rejectLeaveData,leaveStatusData };
+const rejectLeaveData = async (req, res) => {
+  const result = await rejectLeaveService(req.params.id);
+  try {
+    if (result === 1) {
+      res.send({
+        success: true,
+        statusCode: 200,
+        message: "Leave Rejected",
+      });
+    } else {
+      res.send({
+        success: false,
+        statusCode: 400,
+        message: "Leave Not Rejected Id not found",
+      });
+    }
+  } catch (error) {
+    res.send({
+      success: false,
+      statusCode: 500,
+      message: error,
+    });
+  }
+};
+
+const leaveStatusData = async (req, res) => {
+  const result = await getLeaveStatusService(req.params.id);
+  console.log(result);
+  try {
+    if (result !== null) {
+      res.send({
+        success: true,
+        statusCode: 200,
+        data: result,
+        message: "Leave-type data found successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        statusCode: 404,
+        message: "no data available",
+      });
+    }
+  } catch (error) {
+    res.send({
+      success: false,
+      statusCode: 500,
+      message: error,
+    });
+  }
+};
+
+module.exports = {
+  createLeaveApplicationData,
+  getLeaveApplicationsData,
+  approveLeaveData,
+  rejectLeaveData,
+  leaveStatusData,
+};

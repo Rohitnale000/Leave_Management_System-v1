@@ -31,10 +31,7 @@ let loginUserObject={}
 
 {#if status===200}
 <div class="container-sm mt-5 mb-3">
-    <div class="row" style="
-    justify-content: flex-end;
-    align-items: center;
-    margin-top:5px">
+    <div class="row">
         <div class="col-md-2">
             <div class="card p-3 mb-2">
                 <div class="d-flex justify-content-between">
@@ -179,5 +176,12 @@ let loginUserObject={}
 
 .text2 {
     color: #a5aec0
+}
+.row{
+    
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 90px;
+    height: 40vh;
 }
 </style>

@@ -26,8 +26,7 @@ const handleSubmit = async()=>{
     }
     else{
         console.log(data,"created employee");
-    }
-    
+    }  
 }
 
 </script>
@@ -84,6 +83,8 @@ const handleSubmit = async()=>{
                 type="date"
                 class="form-control item"
                 id="date_of_birth"
+                min= "1950-01-01"
+                max= "2023-12-01"
                 bind:value={formFields.dateOfBirth}
                 placeholder="date_of_birth"
             />
@@ -125,7 +126,7 @@ const handleSubmit = async()=>{
             <label for="contactNo" class="form-label">Contact No :</label>
             <input
                 title="contactNo"
-                type="password"
+                type="text"
                 class="form-control item"
                 id="contactNo"
                 bind:value={formFields.contactNo}
@@ -195,7 +196,7 @@ const handleSubmit = async()=>{
         </div>
     </form>  
 
-    <div class="text-center"><button class="btn btn-primary col-sm-2 mt-4" on:click|preventDefault={handleSubmit}>SUBMIT</button></div>  
+    <div class="text-center"><button class="btn btn-success col-sm-2 mt-4" on:click|preventDefault={handleSubmit}>SUBMIT</button></div>  
 
 </div>
 <style>

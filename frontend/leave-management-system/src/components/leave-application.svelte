@@ -41,7 +41,7 @@
 
 <div class="heading_box"><h5>Apply Leave <span><Icon icon="iconoir:help-circle" /></span></h5></div>
 <main class="box">
-    <div class="container-lg mt-5 w-80">
+    <div class="container-lg  w-80">
         <form class="row g-4">
             <div class="form-icon"/>
             <!--Firstname Input-->
@@ -81,6 +81,8 @@
                     id="From Date"
                     bind:value={formFields.fromDate}
                     placeholder="From Date"
+                    min="2023-01-01"
+                    max="2023-12-31"
                 />
             </div>
             <div class="col-md-3">
@@ -90,12 +92,14 @@
                     type="date"
                     class="form-control item"
                     id="To Date"
+                    min="2023-01-01"
+                    max="2023-12-31"
                     bind:value={formFields.toDate}
                     placeholder="To Date"
                 />
             </div>
             
-            <div class="col-md-3">
+            <!-- <div class="col-md-3">
                 <label for="No of leaves" class="form-label">No of Leaves <span class="star">*</span></label>
                 <input
                 title="No of leaves"
@@ -104,7 +108,7 @@
                 id="No of leaves"
                 placeholder="0"
             />
-            </div>
+            </div> -->
             <div class="col-md-4">
                 <label for="Approver" class="form-label">Approver <span class="star">*</span></label>
                 <input
@@ -156,7 +160,7 @@ body{
     display: flex;
     align-items:center;
     justify-content: flex-start;
-    margin-top:30px;
+    margin-top:90px;
     height: 50px;
     padding-bottom:20px;
     padding-top: 20px;
@@ -166,8 +170,9 @@ body{
     background-color: #4baa67;
     color: white;
     font-weight: 800;
-    border-radius:2px;
-
-    
+    border-radius:2px;    
+}
+.container-lg{
+    margin-top: 120px;
 }
 </style>

@@ -1,13 +1,15 @@
 const { loginService, changePassService } = require("../services/login");
+const { emailAndPassValidation } = require("../utils/index");
 
+//controller for login //
 const loginController = async (emailId, password) => {
+  //pass values from validate function
   try {
     const result = await loginService(emailId, password);
     return result;
   } catch (error) {
     console.log("controller Error", error);
   }
-  console.log("I am in result", emailId);
 };
 
 const changePassController = async (emailId, password, confirmPassword) => {
@@ -23,6 +25,5 @@ const changePassController = async (emailId, password, confirmPassword) => {
     }
   }
 };
-
 
 module.exports = { loginController, changePassController };
