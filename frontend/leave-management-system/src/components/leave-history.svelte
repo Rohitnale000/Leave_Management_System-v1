@@ -5,18 +5,22 @@ import { onMount } from 'svelte'
 const LeaveClassObj = new ApplyForLeave()
 
 
-let loginUserObject={}
-  storeData.subscribe(value=>{
-    loginUserObject = value
-  })
+// let loginUserObject={}
+//   storeData.subscribe(value=>{
+//     loginUserObject = value
+//   })
+
+let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
+
+
   let status=""
   let casualLeave='';
   let sickLeave='';
   let paidLeave ='';
   let totalLeave=''
+
   onMount(async()=>{
-   let result = await LeaveClassObj.setLoginId(loginUserObject.data.emp_id)
-   console.log(result.statusCode);
+   let result = await LeaveClassObj.setLoginId(loginUserObject.emp_id)
    casualLeave=result.data.casual_leave
    sickLeave=result.data.sick_leave
    paidLeave=result.data.paid_leave
@@ -30,7 +34,7 @@ let loginUserObject={}
 </script>
 
 {#if status===200}
-<div class="container-sm mt-5 mb-3">
+<div class="container-fluid mt-5 mb-3">
     <div class="row">
         <div class="col-md-2">
             <div class="card p-3 mb-2">
@@ -47,7 +51,7 @@ let loginUserObject={}
                     <h1 class="heading">{paidLeave}<br></h1>
                     <div class="mt-5">
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <!-- <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div> -->
                         </div>
                     </div>
                 </div>
@@ -68,7 +72,7 @@ let loginUserObject={}
                     <h1 class="heading">{sickLeave}<br></h1>
                     <div class="mt-5">
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <!-- <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div> -->
                         </div>
                     </div>
                 </div>
@@ -89,7 +93,7 @@ let loginUserObject={}
                     <h1 class="heading">{casualLeave}<br></h1>
                     <div class="mt-5">
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <!-- <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div> -->
                         </div>
                     </div>
                 </div>
@@ -110,7 +114,7 @@ let loginUserObject={}
                     <h1 class="heading">{totalLeave}<br></h1>
                     <div class="mt-5">
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <!-- <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div> -->
                         </div>
                     </div>
                 </div>
@@ -160,14 +164,7 @@ let loginUserObject={}
     align-items: center
 }
 
-.progress {
-    height: 10px;
-    border-radius: 10px
-}
 
-.progress div {
-    background-color: red
-}
 
 .text1 {
     font-size: 14px;
@@ -181,7 +178,7 @@ let loginUserObject={}
     
     justify-content: flex-end;
     align-items: center;
-    margin-top: 90px;
+    margin-top: 200px;
     height: 40vh;
 }
 </style>

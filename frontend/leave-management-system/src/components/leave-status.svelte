@@ -3,26 +3,29 @@
     import { navigate } from "svelte-routing";    
     import { storeData } from "../store/store";
     import ApplyForLeave from "../controllers/employee"
+   
     const LeaveClassObj = new ApplyForLeave()
-    let loginUserObject={}
+   // let loginUserObject={}
     let result=""
-    storeData.subscribe(value=>{
-    loginUserObject = value
-  })
- 
+//     storeData.subscribe(value=>{
+//     loginUserObject = value
+//   })
+let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
   onMount(async()=>{
-     result = await LeaveClassObj.sendLoginId(loginUserObject.data.emp_id)
+     result = await LeaveClassObj.sendLoginId(loginUserObject.emp_id)
     result=result.data;
+    console.log(result.length);
   })
 
+ 
 
 </script>
  
 
- <div class="container-xl">
+ <div class="container-fluid mt-5">
     <div class="table-responsive">
         <div class="table-wrapper">
-            <div class="table-title mt-3">
+            <div class="table-title mt-5">
                 <div class="row">
                     <div class="col-sm-8 mb-4" style="color:green"><h2>Leave <b>Status</b></h2></div>
                     <div class="col-sm-4">
@@ -35,7 +38,7 @@
             <table class="table table-striped table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Sr.No</th>
                         <th>From Date </th>
                         <th>To Date</th>
                         <th>Type of Leave </th>

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public --no-clear"
+    "start": "sirv public --single"
   },
   "devDependencies": {
     "@iconify/svelte": "^3.1.0",
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "sirv-cli": "^2.0.0",
+    "svelte-confirm": "^0.0.0",
     "svelte-french-toast": "^1.0.4-beta.0",
     "svelte-routing": "^1.6.0",
     "validator": "^13.9.0"

@@ -11,10 +11,6 @@
   let errors = { emailError: "", passwordError: "", confpassError: "" };
   let valid = false;
 
-
-
-
-
   //function handleSubmit for handling submitted data and route that data based on different conditions//
   const handleSubmit = async () => {
     //email validation//
@@ -59,7 +55,7 @@
     );
     try {
       if(result.statusCode===200){
-        toast.success("You have successfully REST Your's Password")
+        toast.success("Password Reset successful")
         navigate("/", { replace: true });
 
       }else
@@ -77,7 +73,7 @@
 <Toaster />
 <main>
   <div class="d-flex justify-content-center align-items-center"style="height: 100vh;">
-    <div class="col-md-3">
+    <div class="col-md-3 mt-5">
       <form>
         <!--email input-->
         <div class="form-group">
@@ -123,8 +119,10 @@
   .star {
     color: red;
   }
-  .error-div {
-    color: red;
+  .error{
+    color:red;
+    margin-top:0px;
+    font-size: smaller;
   }
   .none {
     display: none;

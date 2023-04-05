@@ -16,6 +16,7 @@ const {
   validationForMyprofile,
   isValidDateOfBirth,
   phoneNumber,
+  passwordValidation,
 } = require("../utils/validations");
 
 const createNewEmployeeData = async (req, res) => {
@@ -66,27 +67,43 @@ const updateEmployeeData = async (req, res) => {
   const validationResult2 = phoneNumber(req.body.contact_no);
   console.log(validationResult);
 
-  if (validationResult && validationResult1 && validationResult2) {
-    try {
-      const result = await updateEmployeeService(req.params.id, req.body);
-      if (result === 1) {
-        res.send({
-          success: true,
-          statusCode: 200,
-          message: "Employee detail updated successfully",
-        });
-      } else if (result === 0) {
+  if (validationResult) {
+    if (validationResult1) {
+      if (validationResult2) {
+        try {
+          const result = await updateEmployeeService(req.params.id, req.body);
+          if (result === 1) {
+            res.send({
+              success: true,
+              statusCode: 200,
+              message: "Employee detail updated successfully",
+            });
+          } else if (result === 0) {
+            res.send({
+              success: false,
+              statusCode: 400,
+              message: "Employee Data not updated",
+            });
+          }
+        } catch (error) {
+          res.send({
+            success: false,
+            statusCode: 500,
+            message: error,
+          });
+        }
+      } else {
         res.send({
           success: false,
           statusCode: 400,
-          message: "Employee Data not updated",
+          message: "Enter valid phone number",
         });
       }
-    } catch (error) {
+    } else {
       res.send({
         success: false,
-        statusCode: 500,
-        message: error,
+        statusCode: 400,
+        message: "Enter valid birth date age should be 18 or above",
       });
     }
   } else {
@@ -222,25 +239,38 @@ const deleteEmployeeData = async (req, res) => {
 
 const changePasswordData = async (req, res) => {
   const result = await changePasswordService(req.params.id, req.body);
-  try {
-    if (result) {
-      res.send({
-        success: true,
-        statusCode: 200,
-        message: "Password change successfully",
-      });
-    } else {
+  const validationResult = passwordValidation(
+    req.body.old_password,
+    req.body.new_password
+  );
+  if (validationResult) {
+    try {
+      if (result) {
+        res.send({
+          success: true,
+          statusCode: 200,
+          message: "Password change successfully",
+        });
+      } else {
+        res.send({
+          success: false,
+          statusCode: 400,
+          message: "old password not match",
+        });
+      }
+    } catch (error) {
       res.send({
         success: false,
-        statusCode: 404,
-        message: "old password not match",
+        statusCode: 500,
+        message: error,
       });
     }
-  } catch (error) {
+  } else {
     res.send({
       success: false,
-      statusCode: 500,
-      message: error,
+      statusCode: 404,
+      message:
+        "password must contain at least(1character ,1uppercase,1lowercase,1special character and number) and length should be 8",
     });
   }
 };

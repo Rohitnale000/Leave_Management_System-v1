@@ -1,69 +1,106 @@
-
 <script>
-import { storeData } from "../store/store";
-import { navigate } from "svelte-routing";
-import ApplyForLeave from "../controllers/employee"
-  import { onMount } from "svelte";
-const LeaveClassObj = new ApplyForLeave()
-let result
-
-
-let loginUserObject={}
-  storeData.subscribe(value=>{
-    loginUserObject = value
-  })
-
-
-  let id=loginUserObject.data.emp_id
-
- let dataObject={
-    firstName:"",
-    lastName:"",
-    gender:"",
-    dateOfBirth:"",
-    contactNo:"",
-    email:"",
-    id:id
-}
-
- onMount(async()=>{
-    result = await LeaveClassObj.getEmployeeData(id)
-    dataObject.firstName=result.data.first_name,
-    dataObject.lastName=result.data.last_name,
-    dataObject.gender=result.data.gender,
-    dataObject.dateOfBirth=result.data.date_of_birth,
-    dataObject.contactNo=result.data.contact_no,
-    dataObject.email=result.data.email_id    
- })
-
- 
-
-//   let empDataObject={
-//     empId:loginUserObject.data.emp_id,
-//     firstName:result.data.first_name,
-//     lastName:result.data.last_name,
-//     gender:result.data.gender,
-//     dateOfBirth:result.data.date_of_birth,
-//     contactNo:result.data.contact_no,
-//     email:result.data.email_id
-//   }
-
-
-  const handleUpdateData=async()=>{
-    const result = await LeaveClassObj.getDataFromMyProfile(dataObject)
-   if(result.statusCode===200){
-    navigate("/employee-dashboard") 
-   }
-
-  }
-
-//   const navigateTO = async (parameter)=>{
-//     navigate(parameter)F
-//   }
-  
- 
-    
-</script>
+    import { storeData } from "../store/store";
+    import { navigate } from "svelte-routing";
+    import  ApplyForLeave from "../controllers/employee";
+    import { onMount } from "svelte";
+    import { isValidDateOfBirth } from "../utils/index";
+    import toast, { Toaster } from "svelte-french-toast";
+    import { Confirm } from 'svelte-confirm';
+    let errors = {
+      nameError: "",
+      lastNameError: "",
+      contactError: "",
+      emailError: "",
+      dateError: "",
+    };
+    let valid = false;
+    const LeaveClassObj = new ApplyForLeave();
+    let result;
+    // let loginUserObject = {};
+    // storeData.subscribe((value) => {
+    //   loginUserObject = value;
+    // });
+    let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
+    let id = loginUserObject.emp_id;
+    let dataObject = {
+      firstName: "",
+      lastName: "",
+      gender: "",
+      dateOfBirth: "",
+      contactNo: "",
+      email: "",
+      id: id,
+    };
+    onMount(async () => {
+      result = await LeaveClassObj.getEmployeeData(id);
+        (dataObject.firstName = result.data.first_name),
+        (dataObject.lastName = result.data.last_name),
+        (dataObject.gender = result.data.gender),
+        (dataObject.dateOfBirth = result.data.date_of_birth),
+        (dataObject.contactNo = result.data.contact_no),
+        (dataObject.email = result.data.email_id);
+    });
+    const handleUpdateData = async () => {
+      valid = true;
+      //  console.log(dataObject.email);
+      if ((dataObject.email).length === 0) {
+        valid = false;
+        errors.emailError = "Email should not be empty";
+      } else if (!(dataObject.email).match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
+        valid = false;
+        errors.emailError = "Please enter a valid email address";
+      } else {
+        errors.emailError = "";
+      }
+      if ((dataObject.firstName).length === 0) {
+        valid = false;
+        errors.nameError = "Name should not be blank";
+      } else if (!(dataObject.firstName).match(/^[A-Za-z]+$/)) {
+        valid = false;
+        errors.nameError = "Please enter only alphabetical letters";
+      } else {
+        errors.nameError = "";
+      }
+      if ((dataObject.lastName).length === 0) {
+        valid = false;
+        errors.lastNameError = "Last name should not be blank";
+      } else if (!(dataObject.lastName).match(/^[A-Za-z]+$/)) {
+        valid = false;
+        errors.lastNameError = "Please enter only alphabetical letters";
+      } else {
+        errors.lastNameError = "";
+      }
+      if (!(dataObject.contactNo).match(/^\d{10}$/)) {
+        valid = false;
+        errors.contactError = "Please enter valid number";
+      } else {
+        errors.contactError = "";
+      }
+      if (!isValidDateOfBirth(dataObject.dateOfBirth)) {
+        valid = false;
+        errors.dateError = "Age must be minimum 18 years";
+      } else {
+        errors.dateError = "";
+      }
+      if (valid) {
+        try{
+          const result = await LeaveClassObj.getDataFromMyProfile(dataObject);
+        if (result.statusCode === 200) {
+          toast.success("Your profile has been successfully updated")
+          setTimeout(() => {
+            navigate("/employee-dashboard");
+          }, 1000);
+        }
+        if(result.statusCode === 400){
+          toast.error("error updating profile..");
+        }
+        }catch(error){
+          console.log("Errors while updating my profile");
+        }
+      }
+    };
+  </script>
+  <Toaster />
 {#if result}
 <section>
     <meta charset="utf-8" />
@@ -88,6 +125,7 @@ let loginUserObject={}
                 placeholder="firstName"
                 bind:value={dataObject.firstName}
             />
+            <span class="error">{errors.nameError}</span>
         </div>
         <div class="col-md-4">
             <label for="lastname" class="form-label">Lastname :<span class="star">*</span></label>
@@ -99,6 +137,7 @@ let loginUserObject={}
                 placeholder="lastname"
                 bind:value={dataObject.lastName}
             />
+            <span class="error">{errors.lastNameError}</span>
         </div>
         <div class="col-md-4">
             <label for="Gender" class="form-label">Gender :<span class="star">*</span></label>
@@ -113,6 +152,7 @@ let loginUserObject={}
                 <option value="Female">Female</option>
                 <option value="other">other</option>
                 </select>
+                
         </div>
         <div class="col-md-4">
             <label for="date_of_birth" class="form-label">Date of Birth :</label>
@@ -126,29 +166,9 @@ let loginUserObject={}
                 max="2023-12-31"
                 bind:value={dataObject.dateOfBirth}
             />
+            <span class="error">{errors.dateError}</span>
         </div>
-        <!-- <div class="col-md-4">
-            <label for="password" class="form-label">Password :<span class="star">*</span></label>
-            <input
-                title="password"
-                type="password"
-                class="form-control item"
-                id="password"
-                placeholder="password"
-                bind:value={empDataObject.password}
-            />
-        </div>
-        <div class="col-md-4">
-            <label for="Confirm_password" class="form-label">Confirm Password :<span class="star">*</span></label>
-            <input
-                title="Confirm_password"
-                type="password"
-                class="form-control item"
-                id="Confirm_password"
-                placeholder="Confirm_password"
-                
-            />
-        </div> -->
+       
         <div class="col-md-4">
             <label for="contactNo" class="form-label">Contact No :</label>
             <input
@@ -159,6 +179,7 @@ let loginUserObject={}
                 placeholder="contactNo"
                 bind:value={dataObject.contactNo}
             />
+            <span class="error">{errors.contactError}</span>
         </div>
         <div class="col-md-4">
             <label for="contactNo" class="form-label">Email/Username</label>
@@ -170,11 +191,41 @@ let loginUserObject={}
                 placeholder="contactNo"
                 bind:value={dataObject.email}
             />
+            <span class="error">{errors.emailError}</span>
         </div>
         
-    <div class="text-center"><button class="btn btn-success col-sm-2 mt-4" on:click|preventDefault={handleUpdateData}>Update</button>  
-   <button class="btn btn-dark col-sm-2 mt-4" on:click|preventDefault={()=>{navigate('/employee-dashboard')}}>Back</button></div>  
+    <div class="text-center">
+
+      <button class="btn btn-success col-sm-2 mt-4" on:click|preventDefault={handleUpdateData}>Update</button>  
+      <button class="btn btn-dark col-sm-2 mt-4" on:click|preventDefault={()=>{navigate('/employee-dashboard')}}>Back</button>
+  </div>  
     <!-- <div class="text-center"><button class="btn btn-primary col-sm-2 mt-4" on:click|preventDefault={navigateTO('/employee-dashboard')}>Back</button></div>   -->
   
 </div>    
 {/if}
+
+<style>
+    .star{
+        color:red;
+    }
+    .error{
+    color:red;
+    margin-top:0px;
+    font-size: smaller;
+  }
+.form-label {
+    font-weight: 500;
+}
+.mt-5{
+  margin-top: 9rem!important
+}
+</style>
+
+
+
+
+
+
+
+
+

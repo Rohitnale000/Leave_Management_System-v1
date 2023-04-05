@@ -18,14 +18,11 @@ exports.createLeaveApplicationService = async (bodyData) => {
   const toDate = new Date(bodyData.to_date);
   let difference = dateDiffInDays(fromDate, toDate);
   difference = difference + 1;
-  console.log(difference);
 
   try {
     const queryResult = await leaveTypeDb.findAll({
       where: { emp_id: bodyData.emp_id },
     });
-
-    console.log(queryResult[0].dataValues);
 
     if (bodyData.type_of_leave === "Sick Leave") {
       iCnt = 1;

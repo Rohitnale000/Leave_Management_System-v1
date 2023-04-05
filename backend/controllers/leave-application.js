@@ -6,14 +6,16 @@ const {
   getLeaveStatusService,
 } = require("../services/leave-application");
 const { dateDiffInDays } = require("../utils/datedifferance");
+const { otherFieldValidation } = require("../utils/validations");
 
 const createLeaveApplicationData = async (req, res) => {
   let flag = false;
   const fromDate = new Date(req.body.from_date);
   const toDate = new Date(req.body.to_date);
-  let validationResult = await dateDiffInDays(fromDate, toDate);
-  console.log(validationResult);
-  if (validationResult >= 0) {
+  let validationResult = dateDiffInDays(fromDate, toDate);
+  let validationResult1 = otherFieldValidation(req.body);
+
+  if (validationResult >= 0 && validationResult1) {
     flag = true;
   } else {
     flag = false;

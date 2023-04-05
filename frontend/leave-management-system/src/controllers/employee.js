@@ -1,6 +1,7 @@
 //import service from services
 import {
   applyForLeaveService,
+  changePasswordService,
   getEmployeeLeaveService,
   getLeaveApplicationStatusService,
   getSingleEmployeeService,
@@ -53,6 +54,16 @@ export default class ApplyForLeave {
   async getEmployeeData(id) {
     try {
       const result = await getSingleEmployeeService(id);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async changePassword(allFormFeilds) {
+    try {
+      const result = await changePasswordService(allFormFeilds);
+      console.log(result);
       return result;
     } catch (error) {
       console.log(error);

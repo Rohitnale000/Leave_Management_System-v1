@@ -13,7 +13,7 @@
   let writeInStore;
   // let error_boolean = false;
   //validation//
-  let errors = { emailError: "", passwordError: "" };
+  let errors = { emailError: "", passwordError: ""};
   let valid = false;
   //function handleSubmit for handling submitted data and route that data based on different conditions//
   const handleSubmit = async () => {
@@ -39,20 +39,24 @@
       valid = false;
       errors.passwordError = "password must contain atleast(1character ,1uppercase,1lowercase,1special character and number)";
     } else {
-      errors.emailError = "";
+      errors.passwordError = "";
     }
     //if valid then only execute the following code submit//
     if (valid) {
+
       const submitResponse = await loginController(emailId, password);
-      writeInStore = await submitResponse;
-      let data = storeData.set(await writeInStore);
-      console.log(data);
+      //console.log(submitResponse);
+      //writeInStore = await submitResponse;
+      //let data = storeData.set(await writeInStore);
+      console.log(submitResponse.data)
+      sessionStorage.setItem('data', JSON.stringify(submitResponse.data));
+     
       try {
         if (
           submitResponse.statusCode === 200 &&
           submitResponse.data.update_password == "0"
         ) {
-          toast.success("You have sucessfully logged In please reset your password");
+          toast.success("You have successfully logged In please reset your password");
           navigate("/changepassword", { replace: true });
         } else if (
           submitResponse.statusCode == 200 &&
@@ -65,15 +69,17 @@
           submitResponse.data.update_password == "1" &&
           submitResponse.data.emp_role == "Employee"
         ) {
-          navigate("/employee-dashboard", { replace: true });
-        } else if (submitResponse.statusCode == 400 && success == false) {
-          console.log("wrong password");
-          navigate("/", { replace: true });
+          toast.success( "Welcome " +submitResponse.data.first_name + " login success ")
+          setTimeout(() => {
+            navigate("/employee-dashboard", { replace: true });
+          }, 1000);
+          
         } else {
-          console.log("welcome to LMS");
+          toast.error("Incorrect Email or Password");
+          navigate("/", { replace: true });
         }
       } catch (error) {
-        console.log("error occured");
+        console.log(error);
       }
     }
   };
@@ -142,7 +148,9 @@
               value="login"
               on:click|preventDefault={handleSubmit}>LOG IN</button
             >
+            
           </div>
+          
         </div>
       </form>
     </div>
@@ -165,6 +173,8 @@
     color: red;
   }
   .error{
-    color: red;
+    color:red;
+    margin-top:0px;
+    font-size: smaller;
   }
 </style>

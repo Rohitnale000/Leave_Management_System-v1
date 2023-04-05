@@ -1,6 +1,6 @@
 <script>
 	import LeaveApplication from './../leave-application.svelte';
-  import { navigate } from "svelte-routing";
+  import { navigate,link } from "svelte-routing";
 </script>
 <div class="wrapper">
     <nav id="sidebar">
@@ -8,12 +8,17 @@
       </div>
       <ul class="list-unstyled components">
         <br>
-        <li>
-          <a href="#" on:click={()=>{
-            navigate("/my-profile")
-          }}>My Profile</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="/my-profile" use:link>View Profile</a>
+              <a class="dropdown-item" href="/change-password" use:link>Change Password</a>
+              <div class="dropdown-divider"></div>
+              <!-- <a class="dropdown-item" href="#">Logout</a> -->
+      </div>
         </li>
         <li>
+          
           <!-- <a href="#">Change Password</a> -->
         </li>
         <li>
@@ -26,6 +31,7 @@
             navigate("/leave-status")
           }}>Leave Status</a>
         </li>
+        
       </ul>
     </nav>
   </div>

@@ -1,47 +1,84 @@
 <script>
-  
   import Icon from "@iconify/svelte";
+  import toast, { Toaster } from "svelte-french-toast";
   import { navigate } from "svelte-routing";
   import { storeData } from "../store/store";
   //import class from controller
   import ApplyForLeave from "../controllers/employee"
   //create object of that class
+  let errors = {leavetypeError:'',daytypeError:'',fromdateError:'',todateError:''}
+  let valid = false
+
   const LeaveClassObj = new ApplyForLeave()
 
-
-  let loginUserObject={}
-  storeData.subscribe(value=>{
-    loginUserObject = value
-  })
-
+  let today = new Date();
+  let yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate());
+  let minDate = yesterday.toISOString().split("T")[0]; 
+  console.log(minDate);
+ 
+  // let loginUserObject={}
+  // storeData.subscribe(value=>{
+  //   loginUserObject = value
+  // })
+  let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
   const formFields={
     typeOfLeave:"",
     typeOfDay:"",
     fromDate:"",
     toDate:"",
     reason:"",
-    empId:loginUserObject.data.emp_id,
-    reportingManagerEmail:loginUserObject.data.reporting_manager_email
+    empId:loginUserObject.emp_id,
+    reportingManagerEmail:loginUserObject.reporting_manager_email
   }
 
   const handleSubmit =async ()=>{
+   valid=true;
+   if ((formFields.typeOfLeave)== "") {
+      valid = false;
+      errors.leavetypeError = "Please select leave type";
+    } else {
+      errors.leavetypeError = "";
+    }
+    if ((formFields.typeOfDay)== "") {
+      valid = false;
+      errors.daytypeError = "Please select (full/half) day";
+    } else {
+      errors.daytypeError = "";
+    }
+    if ((formFields.fromDate).length ===0) {
+      valid = false;
+      errors.fromdateError = "please select valid date";
+    } else {
+      errors.fromdateError = "";
+    }
+    if ((formFields.toDate).length ===0) {
+      valid = false;
+      errors.todateError = "please select valid date";
+    } else {
+      errors.todateError = "";
+    }
    //using class object call methods from that class
    //also send data that you want to send to class
-   let result = await LeaveClassObj.getFormData(formFields)
+   if(valid){
+    let result = await LeaveClassObj.getFormData(formFields)
    console.log(result.statusCode);
     if(result.statusCode===201){
-        navigate("/employee-dashboard")  
+        toast.success("You have successfully applied for leave")
+        navigate("/leave-application")
     }else if(result.statusCode===404){
+        toast.error("There is no leave pending")
         navigate("/leave-application")
     }
+   }
   }
 
- 
-</script>
 
-<div class="heading_box"><h5>Apply Leave <span><Icon icon="iconoir:help-circle" /></span></h5></div>
+</script>
+<Toaster />
+<!-- <div class="heading_box"><h5>Apply Leave <span><Icon icon="iconoir:help-circle" /></span></h5></div> -->
 <main class="box">
-    <div class="container-lg  w-80">
+    <div class="container-fluid  ">
         <form class="row g-4">
             <div class="form-icon"/>
             <!--Firstname Input-->
@@ -58,6 +95,7 @@
                 <option value="Sick Leave">Sick Leave</option>
                 <option value="Casual Leave">Casual Leave</option>
             </select>
+            <span class="error">{errors.leavetypeError}</span>
             </div>
             <div class="col-md-3">
                 <label for="half Day" class="form-label">Type of Day <span class="star">*</span></label>
@@ -71,6 +109,7 @@
                 <option value="Full Day">Full Day</option>
                 <option value="Half Day">Half Day</option>
             </select>
+            <span class="error">{errors.daytypeError}</span>
             </div>
             <div class="col-md-3">
                 <label for="From date" class="form-label">From Date <span class="star">*</span></label>
@@ -81,9 +120,9 @@
                     id="From Date"
                     bind:value={formFields.fromDate}
                     placeholder="From Date"
-                    min="2023-01-01"
-                    max="2023-12-31"
+                    min={minDate}
                 />
+                <div class="error">{errors.fromdateError}</div>
             </div>
             <div class="col-md-3">
                 <label for="To date" class="form-label">To Date <span class="star">*</span></label>
@@ -92,11 +131,11 @@
                     type="date"
                     class="form-control item"
                     id="To Date"
-                    min="2023-01-01"
-                    max="2023-12-31"
+                    min={minDate}
                     bind:value={formFields.toDate}
                     placeholder="To Date"
                 />
+                <span class="error">{errors.todateError}</span>
             </div>
             
             <!-- <div class="col-md-3">
@@ -153,7 +192,7 @@ body{
 	-ms-flex: 1;
 	background: whitesmoke;
     margin: 40px;
-    margin-top:0px;
+    margin-top:180px;
     height: 80vh;
 }
 .heading_box{
@@ -175,4 +214,9 @@ body{
 .container-lg{
     margin-top: 120px;
 }
+.error{
+    color:red;
+    margin-top:0px;
+    font-size: smaller;
+  }
 </style>

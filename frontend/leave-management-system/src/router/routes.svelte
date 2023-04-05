@@ -8,6 +8,7 @@
   import LeaveApplication from "../components/leave-application.svelte";
   import LeaveHistory from '../components/leave-history.svelte';
   import MyProfile from '../components/my-profile.svelte';
+  import ChangePassword from '../components/change-password.svelte';
 </script>
 
 <Router>
@@ -37,6 +38,9 @@
   </Route>
   <Route path="/create-employee">
     <CreateEmployee/>
+  </Route>
+  <Route path="/change-password">
+    <ChangePassword/>
   </Route>
 </Router>
 

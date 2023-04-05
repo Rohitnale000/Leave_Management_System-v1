@@ -108,3 +108,25 @@ exports.phoneNumber = (num) => {
     return false;
   }
 };
+
+exports.otherFieldValidation = (bodyData) => {
+  if (
+    !validator.isEmpty(bodyData.type_of_leave) &&
+    !validator.isEmpty(bodyData.type_of_day)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+exports.passwordValidation = (oldPass, newPass) => {
+  if (
+    validator.isStrongPassword(oldPass) &&
+    validator.isStrongPassword(newPass)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};

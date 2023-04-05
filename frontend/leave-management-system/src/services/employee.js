@@ -88,3 +88,23 @@ exports.getSingleEmployeeService = async (id) => {
     console.log(error);
   }
 };
+
+exports.changePasswordService = async (allFormFeilds) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/employee/changepassword/${allFormFeilds.id}`,
+      {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          old_password: allFormFeilds.oldPassword,
+          new_password: allFormFeilds.newPassword,
+        }),
+      }
+    );
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
