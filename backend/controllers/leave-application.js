@@ -10,6 +10,25 @@ const { otherFieldValidation } = require("../utils/validations");
 
 const createLeaveApplicationData = async (req, res) => {
   let flag = false;
+  // let falg2;
+
+  // if (req.body.type_of_day === "Half Day") {
+  //   if (req.body.from_date === req.body.to_date) {
+  //     falg2 = true;
+  //   } else {
+  //     falg2 = false;
+  //   }
+  // }
+
+  // if (falg2 === false) {
+  //   res.send({
+  //     success: false,
+  //     statusCode: 404,
+  //     message: "If you are apply for Half day please select same date",
+  //   });
+  //   return;
+  // }
+
   const fromDate = new Date(req.body.from_date);
   const toDate = new Date(req.body.to_date);
   let validationResult = dateDiffInDays(fromDate, toDate);
@@ -111,7 +130,7 @@ const approveLeaveData = async (req, res) => {
 };
 
 const rejectLeaveData = async (req, res) => {
-  const result = await rejectLeaveService(req.params.id);
+  const result = await rejectLeaveService(req.body.emp_id, req.params.id);
   try {
     if (result === 1) {
       res.send({

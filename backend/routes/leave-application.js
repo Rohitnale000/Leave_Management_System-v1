@@ -13,7 +13,7 @@ router.post("/leave", createLeaveApplicationData);
 
 router.get("/:email/leave", getLeaveApplicationsData);
 
-router.patch("/leave", approveLeaveData);
+router.patch("/leave/:id", approveLeaveData);
 
 router.put("/leave/:id", rejectLeaveData);
 

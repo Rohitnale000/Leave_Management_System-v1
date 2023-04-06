@@ -6,7 +6,7 @@
   //import class from controller
   import ApplyForLeave from "../controllers/employee"
   //create object of that class
-  let errors = {leavetypeError:'',daytypeError:'',fromdateError:'',todateError:''}
+  let errors = {leavetypeError:'',daytypeError:'',fromdateError:'',todateError:'',dayError:''}
   let valid = false
 
   const LeaveClassObj = new ApplyForLeave()
@@ -57,17 +57,26 @@
       errors.todateError = "please select valid date";
     } else {
       errors.todateError = "";
+    }if((formFields.typeOfDay==='Half Day')){
+        if(formFields.fromDate !== formFields.toDate){
+          valid = false;
+          errors.dayError = "You are choose Half Day and does not select valid date(Same Date)";
+        }
+        else{
+             errors.dayError = "";
+        }
+    }else{
+      errors.dayError = "";
     }
    //using class object call methods from that class
    //also send data that you want to send to class
    if(valid){
     let result = await LeaveClassObj.getFormData(formFields)
-   console.log(result.statusCode);
     if(result.statusCode===201){
         toast.success("You have successfully applied for leave")
         navigate("/leave-application")
     }else if(result.statusCode===404){
-        toast.error("There is no leave pending")
+        toast.error(result.message)
         navigate("/leave-application")
     }
    }
@@ -76,9 +85,12 @@
 
 </script>
 <Toaster />
+
 <!-- <div class="heading_box"><h5>Apply Leave <span><Icon icon="iconoir:help-circle" /></span></h5></div> -->
 <main class="box">
-    <div class="container-fluid  ">
+
+    <div class="container-fluid  "><br>
+      <!-- <marquee class="blink">If You are apply for Half Day Please Select <b>Same Date</b></marquee> -->
         <form class="row g-4">
             <div class="form-icon"/>
             <!--Firstname Input-->
@@ -160,7 +172,9 @@
                 disabled
             />
             </div>
-
+            <div class="col-md-3">
+              <span class="error">{errors.dayError}</span>
+            </div>
             <div class="form-group">
                 <label for="Reason for leave" class="form-label">Reason For leave</label>
                 <textarea class="form-control" id="Reason for leave" bind:value={formFields.reason} rows="2" col="4" maxlength="250"  ></textarea>
@@ -218,5 +232,8 @@ body{
     color:red;
     margin-top:0px;
     font-size: smaller;
+  }
+  .blink{
+    color: red;
   }
 </style>

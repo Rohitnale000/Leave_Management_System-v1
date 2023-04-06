@@ -112,7 +112,9 @@ exports.phoneNumber = (num) => {
 exports.otherFieldValidation = (bodyData) => {
   if (
     !validator.isEmpty(bodyData.type_of_leave) &&
-    !validator.isEmpty(bodyData.type_of_day)
+    !validator.isEmpty(bodyData.type_of_day) &&
+    !validator.isEmpty(bodyData.from_date) &&
+    !validator.isEmpty(bodyData.to_date)
   ) {
     return true;
   } else {

@@ -64,7 +64,7 @@ exports.createLeaveApplicationService = async (bodyData) => {
       }
     }
 
-    console.log(flag);
+    //console.log(flag);
 
     if (flag) {
       const applicationResult = applicationDetailsDb.create({
@@ -157,7 +157,7 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
             leave_status: "Approve",
           },
           {
-            where: { emp_id: bodyData.emp_id },
+            where: { emp_id: bodyData.emp_id, app_id: paramsId },
           }
         );
       });
@@ -183,7 +183,7 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
             leave_status: "Approve",
           },
           {
-            where: { emp_id: bodyData.emp_id },
+            where: { emp_id: bodyData.emp_id, app_id: paramsId },
           }
         );
       });
@@ -216,7 +216,7 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
             leave_status: "Approve",
           },
           {
-            where: { emp_id: bodyData.emp_id },
+            where: { emp_id: bodyData.emp_id, app_id: paramsId },
           }
         );
       });
@@ -243,7 +243,7 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
             leave_status: "Approve",
           },
           {
-            where: { emp_id: bodyData.emp_id },
+            where: { emp_id: bodyData.emp_id, app_id: paramsId },
           }
         );
       });
@@ -276,7 +276,7 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
             leave_status: "Approve",
           },
           {
-            where: { emp_id: bodyData.emp_id },
+            where: { emp_id: bodyData.emp_id, app_id: paramsId },
           }
         );
       });
@@ -303,7 +303,7 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
             leave_status: "Approve",
           },
           {
-            where: { emp_id: bodyData.emp_id },
+            where: { emp_id: bodyData.emp_id, app_id: paramsId },
           }
         );
       });
@@ -315,14 +315,14 @@ exports.approveLeaveService = async (bodyData, paramsId) => {
   //console.log(queryResult[0].dataValues.sick_leave);
 };
 
-exports.rejectLeaveService = async (paramsId) => {
+exports.rejectLeaveService = async (bodyData, paramsId) => {
   try {
     const leaveStatusChange = await applicationDetailsDb.update(
       {
         leave_status: "Reject",
       },
       {
-        where: { emp_id: paramsId },
+        where: { emp_id: bodyData, app_id: paramsId },
       }
     );
     const resultInArray = leaveStatusChange[0];
