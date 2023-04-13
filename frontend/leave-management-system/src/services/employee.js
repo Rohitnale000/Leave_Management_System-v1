@@ -1,4 +1,5 @@
 //create service for logic
+
 exports.applyForLeaveService = async (allFormFields) => {
   try {
     const res = await fetch(`http://localhost:3000/leave`, {
@@ -102,6 +103,76 @@ exports.changePasswordService = async (allFormFeilds) => {
         }),
       }
     );
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getEmployeeListService = async (email) => {
+  try {
+    const url = `http://localhost:3000/${email}/employee?page=1&limit=8`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    });
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.deleteEmployeeService = async (id, reason) => {
+  try {
+    const url = `http://localhost:3000/employee/${id}`;
+    const res = await fetch(url, {
+      method: "delete",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ reason_for_delete: reason }),
+    });
+    return res.json();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.searchEmployeeService = async (email, manEmail) => {
+  try {
+    const url = `http://localhost:3000/employee?empEmail=${email}&manEmail=${manEmail}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    });
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.updateEmployeeByManagerService = async (id, allFormFields) => {
+  console.log(allFormFields);
+  try {
+    const url = `http://localhost:3000/api/employee/${id}`;
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        first_name: allFormFields.firstName,
+        last_name: allFormFields.lastName,
+        gender: allFormFields.gender,
+        date_of_birth: allFormFields.dateOfBirth,
+        email_id: allFormFields.email,
+        contact_no: allFormFields.contactNo,
+        department: allFormFields.department,
+        designation: allFormFields.designation,
+        joining_date: allFormFields.joiningDate,
+        emp_role: allFormFields.role,
+        reporting_manager_email: allFormFields.reportingManagerEmail,
+      }),
+    });
     const response = await res.json();
     return await response;
   } catch (error) {

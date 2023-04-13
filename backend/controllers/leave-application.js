@@ -1,9 +1,11 @@
+const { query } = require("express");
 const {
   createLeaveApplicationService,
   getLeaveApplicationsService,
   approveLeaveService,
   rejectLeaveService,
   getLeaveStatusService,
+  searchLeaveAppService,
 } = require("../services/leave-application");
 const { dateDiffInDays } = require("../utils/datedifferance");
 const { otherFieldValidation } = require("../utils/validations");
@@ -181,10 +183,40 @@ const leaveStatusData = async (req, res) => {
   }
 };
 
+const searchLeaveData = async (req, res) => {
+  const result = await searchLeaveAppService(
+    req.query.data,
+    req.query.manEmail
+  );
+  try {
+    if (result.length >= 1) {
+      res.send({
+        success: true,
+        statusCode: 302,
+        data: result,
+        message: "Leave application data found successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        statusCode: 404,
+        message: "no data available",
+      });
+    }
+  } catch (error) {
+    res.send({
+      success: false,
+      statusCode: 500,
+      message: error,
+    });
+  }
+};
+
 module.exports = {
   createLeaveApplicationData,
   getLeaveApplicationsData,
   approveLeaveData,
   rejectLeaveData,
   leaveStatusData,
+  searchLeaveData,
 };

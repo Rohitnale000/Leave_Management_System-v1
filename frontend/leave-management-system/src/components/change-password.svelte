@@ -1,13 +1,9 @@
 <script>
   import { navigate } from "svelte-routing";
-  import { storeData } from "../store/store";
   import ApplyForLeave from "../controllers/employee";
   import toast, { Toaster } from "svelte-french-toast";
-  //get data from store//
-  // let loginUserObject = {};
-  // storeData.subscribe((value) => {
-  //   loginUserObject = value;
-  // });
+  import DashboardNavbar from "./shared/dashboard-navbar.svelte";
+  
   let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
   const formFields = {
     oldPassword: "",
@@ -15,6 +11,7 @@
     confPassword: "",
     id: loginUserObject.emp_id,
   };
+
   //controller class instance//
   const LeaveClassObj = new ApplyForLeave();
   //store error massages into object//
@@ -60,7 +57,7 @@
     if (valid) {
       try {
         const result = await LeaveClassObj.changePassword(formFields);
-        console.log(result);
+       
         if (result.statusCode === 200) {
           toast.success("You have successfully changed your password");
           setTimeout(() => {
@@ -78,8 +75,8 @@
     }
   };
 </script>
-
 <Toaster />
+<DashboardNavbar/>
 <main>
   <div
     class="d-flex justify-content-center align-items-center"
@@ -134,6 +131,7 @@
         </div>
       </div>
       <!--Submit Button-->
+      
       <button
         type="submit"
         class="btn btn-success col-md-4 mt-4 px-2"

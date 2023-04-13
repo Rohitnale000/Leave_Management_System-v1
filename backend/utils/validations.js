@@ -9,22 +9,8 @@ exports.emailAndPassValidation = (email, password) => {
   }
 };
 
-exports.allFieldValidation = (bodyData) => {
-  console.log(bodyData);
-  if (
-    !validator.isEmpty(
-      bodyData.first_name &&
-        bodyData.last_name &&
-        bodyData.date_of_birth &&
-        bodyData.gender &&
-        bodyData.contact_no &&
-        bodyData.department &&
-        bodyData.designation &&
-        bodyData.joining_date &&
-        bodyData.emp_role &&
-        bodyData.emp_password
-    )
-  ) {
+exports.isStringValidation = (data) => {
+  if (validator.isAlpha(data)) {
     return true;
   } else {
     return false;
@@ -32,7 +18,7 @@ exports.allFieldValidation = (bodyData) => {
 };
 
 exports.emailValidation = (email) => {
-  if (!validator.isEmpty(email)) {
+  if (validator.isEmail(email)) {
     return true;
   } else {
     return false;
@@ -127,6 +113,14 @@ exports.passwordValidation = (oldPass, newPass) => {
     validator.isStrongPassword(oldPass) &&
     validator.isStrongPassword(newPass)
   ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+exports.isEmptyValidation = (email) => {
+  if (!validator.isEmpty(email)) {
     return true;
   } else {
     return false;

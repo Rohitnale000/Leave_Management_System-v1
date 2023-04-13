@@ -1,7 +1,8 @@
 exports.createEmpService = async (formfields) => {
   console.log(formfields);
   try {
-    const res = await fetch("http://localhost:3000/employee", {
+    const url = "http://localhost:3000/employee";
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,35 +23,92 @@ exports.createEmpService = async (formfields) => {
       }),
     });
     const response = await res.json();
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);
-  } // console.log( await emailId);
-  // console.log( await password);
-};
-exports.employeeListService = async (email, page) => {
-  console.log(email);
-  console.log(page);
-  try {
-    const res = await fetch(
-      `http://localhost:3000/${email}/employee?page=${page}&limit=3`,
-      {
-        method: "GET",
-        headers: { "content-type": "application/json" },
-      }
-    );
-    const listData = await res.json();
-    console.log(listData, "res from service employeelist");
-    return listData;
-  } catch (e) {
-    console.log("error pagination..");
   }
 };
-exports.pendingListService = async (email, page) => {
-  console.log(email);
-  console.log(page);
+
+exports.leaveApplicationsListService = async (email) => {
   try {
-    // const pendingList = await fetch(``)
-  } catch (e) {}
+    const url = `http://localhost:3000/${email}/leave?page=1&limit=8`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    });
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+exports.getSingleLeaveApplicationService = async (id) => {
+  try {
+    const url = `http://localhost:3000/leave-application/${id}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    });
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.searchLeaveApplicationService = async (leaveStatus, email) => {
+  try {
+    const url = `http://localhost:3000/leave?data=${leaveStatus}&manEmail=${email}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    });
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.rejectLeaveApplicationService = async (appId, empId) => {
+  try {
+    const url = `http://localhost:3000/leave/${appId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        emp_id: empId,
+      }),
+    });
+    const response = await res.json();
+    return await response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+// exports.employeeListService = async (email, page) => {
+//   console.log(email);
+//   console.log(page);
+//   try {
+//     const res = await fetch(
+//       `http://localhost:3000/${email}/employee?page=${page}&limit=3`,
+//       {
+//         method: "GET",
+//         headers: { "content-type": "application/json" },
+//       }
+//     );
+//     const listData = await res.json();
+//     console.log(listData, "res from service employeelist");
+//     return listData;
+//   } catch (e) {
+//     console.log("error pagination..");
+//   }
+// };
+// exports.pendingListService = async (email, page) => {
+//   console.log(email);
+//   console.log(page);
+//   try {
+//     // const pendingList = await fetch(``)
+//   } catch (e) {}
+// };

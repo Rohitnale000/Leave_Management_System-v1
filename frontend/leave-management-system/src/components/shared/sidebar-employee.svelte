@@ -58,7 +58,7 @@
     }
     #sidebar ul.components {
       padding: 0;
-      margin-top: 120px;
+      margin-top: 80px;
     }
     #sidebar ul li {
       list-style: none;

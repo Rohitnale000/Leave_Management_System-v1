@@ -1,26 +1,26 @@
 <script>
-  import { navigate } from "svelte-routing";
+  import { navigate,link } from "svelte-routing";
+
+  const navigateTo = (params)=>{
+    navigate(params);
+  }
+
 </script>
 <div class="wrapper">
     <nav id="sidebar">
-      <div class="sidebar-header">
-      </div>
-      <ul class="list-unstyled components">
+      <ul class="mt-5">
         <!-- Add new Employee -->
-        <li class="mt-5">
-          <a href="#" on:click={()=>{navigate("/create-employee",{replace:true})}}>Add New Employee</a>
+        <li>
+          <a href='/create-employee' use:link>Add New Employee</a>
         </li>
         <li>
-          <a href="#" on:click={()=>{navigate("/employee-list",{replace:true})}}>Employee List</a>
+          <a href="/employee-list" use:link>Employee List</a>
         </li>
         <li>
-          <a href="#">Leave Applications</a>
+          <a href="/pending-applications" use:link>Leave Applications</a>
         </li>
       </ul>
     </nav>
-    <!-- <div id="content">
-      <h1>My Content</h1>
-    </div> -->
   </div>
   <style>
 .wrapper {

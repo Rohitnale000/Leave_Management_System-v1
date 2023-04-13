@@ -68,13 +68,19 @@ exports.updateEmployeeService = async (paramsId, bodyData) => {
   }
 };
 
-exports.searchEmployeeService = async (paramsEmail) => {
+exports.searchEmployeeService = async (empEmail, manEmail) => {
   try {
     const queryResult = await employeeDetailsDb.findAll({
       where: {
         status: "Active",
         emp_role: "Employee",
-        email_id: { [Op.like]: `%${paramsEmail}%` },
+        reporting_manager_email: { [Op.iLike]: `%${manEmail}%` },
+        [Op.or]: [
+          { email_id: { [Op.iLike]: `%${empEmail}%` } },
+          { contact_no: { [Op.iLike]: `%${empEmail}%` } },
+          { first_name: { [Op.iLike]: `%${empEmail}%` } },
+          { last_name: { [Op.iLike]: `%${empEmail}%` } },
+        ],
       },
     });
     return queryResult;
@@ -98,7 +104,7 @@ exports.employeePaginationService = async (page, limit, paramsEmail) => {
       offset,
     });
     const count = await employeeDetailsDb.count({
-      where: { status: "Active" },
+      where: { status: "Active", reporting_manager_email: paramsEmail },
     });
     let result = dataFormatting(data);
     return { data1: result, totalCount: count };
@@ -119,6 +125,8 @@ exports.updateEmployeeInfoService = async (paramsId, bodyData) => {
       department: bodyData.department,
       designation: bodyData.designation,
       joining_date: bodyData.joining_date,
+      date_of_birth: bodyData.date_of_birth,
+      gender: bodyData.gender,
       emp_role: bodyData.emp_role,
       reporting_manager_email: bodyData.reporting_manager_email,
     },

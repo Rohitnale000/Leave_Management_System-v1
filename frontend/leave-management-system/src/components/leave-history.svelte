@@ -1,18 +1,9 @@
 <script>
-import { storeData } from "../store/store";
 import ApplyForLeave from "../controllers/employee"
 import { onMount } from 'svelte'
 const LeaveClassObj = new ApplyForLeave()
 
-
-// let loginUserObject={}
-//   storeData.subscribe(value=>{
-//     loginUserObject = value
-//   })
-
 let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
-
-
   let status=""
   let casualLeave='';
   let sickLeave='';
@@ -27,14 +18,9 @@ let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
     totalLeave=result.data.total_leave;
     status=result.statusCode
   })
-
-
-  
-
 </script>
-
 {#if status===200}
-<div class="container-fluid mt-5 mb-3">
+<div class="container-fluid mt-5 mb-3 ">
     <div class="row">
         <div class="col-md-2">
             <div class="card p-3 mb-2">
@@ -123,8 +109,6 @@ let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
     </div>
 </div>    
 {/if}
-
-
 <style>
     body {
     background-color: #eee
@@ -176,8 +160,9 @@ let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
 }
 .row{
     
-    justify-content: flex-end;
+    justify-content: space-around;
     align-items: center;
+    margin-left: 20%;
     margin-top: 200px;
     height: 40vh;
 }

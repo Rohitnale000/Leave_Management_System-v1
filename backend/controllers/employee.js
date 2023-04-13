@@ -9,7 +9,6 @@ const {
   getSingleEmployeeService,
 } = require("../services/employee");
 const {
-  allFieldValidation,
   emailAndPassValidation,
   emailValidation,
   reasonForDelete,
@@ -17,15 +16,23 @@ const {
   isValidDateOfBirth,
   phoneNumber,
   passwordValidation,
+  isStringValidation,
+  isEmptyValidation,
 } = require("../utils/validations");
 
 const createNewEmployeeData = async (req, res) => {
-  const validationResult = allFieldValidation(req.body);
-  const validationResult1 = emailAndPassValidation(
-    req.body.email_id,
-    req.body.emp_password
-  );
-  if (validationResult && validationResult1) {
+  if (
+    isStringValidation(req.body.first_name) &&
+    isStringValidation(req.body.last_name) &&
+    isStringValidation(req.body.gender) &&
+    isStringValidation(req.body.department) &&
+    isStringValidation(req.body.designation) &&
+    isStringValidation(req.body.emp_role) &&
+    emailValidation(req.body.email_id) &&
+    isValidDateOfBirth(req.body.date_of_birth) &&
+    phoneNumber(req.body.contact_no) &&
+    emailValidation(req.body.reporting_manager_email)
+  ) {
     try {
       const result = await createNewEmployeeService(req.body);
       if (result) {
@@ -116,8 +123,12 @@ const updateEmployeeData = async (req, res) => {
 };
 
 const searchEmployeeData = async (req, res) => {
-  //console.log(req.params.email);
-  const result = await searchEmployeeService(req.params.email);
+  // const validationResult = isEmptyValidation(req.params.email);
+  // if (validationResult === true) {
+  const result = await searchEmployeeService(
+    req.query.empEmail,
+    req.query.manEmail
+  );
   try {
     if (result.length >= 1) {
       res.send({
@@ -140,6 +151,13 @@ const searchEmployeeData = async (req, res) => {
       message: error,
     });
   }
+  // } else {
+  //   res.send({
+  //     success: false,
+  //     statusCode: 404,
+  //     message: "no data available",
+  //   });
+  // }
 };
 
 const employeePaginationData = async (req, res) => {
@@ -176,29 +194,47 @@ const employeePaginationData = async (req, res) => {
 //manager/admin update employee details controller
 
 const updateEmployeeDetailData = async (req, res) => {
-  console.log(req.params.id);
-  const result = await updateEmployeeInfoService(req.params.id, req.body);
-  console.log(result);
-  try {
-    if (result === 1) {
-      res.send({
-        success: true,
-        statusCode: 302,
-        data: result,
-        message: "Employee data found successfully",
-      });
-    } else {
+  if (
+    isStringValidation(req.body.first_name) &&
+    isStringValidation(req.body.last_name) &&
+    isStringValidation(req.body.department) &&
+    isStringValidation(req.body.designation) &&
+    isStringValidation(req.body.emp_role) &&
+    emailValidation(req.body.email_id) &&
+    isValidDateOfBirth(req.body.date_of_birth) &&
+    phoneNumber(req.body.contact_no) &&
+    isStringValidation(req.body.gender) &&
+    emailValidation(req.body.reporting_manager_email)
+  ) {
+    const result = await updateEmployeeInfoService(req.params.id, req.body);
+    console.log(result);
+    try {
+      if (result === 1) {
+        res.send({
+          success: true,
+          statusCode: 302,
+          data: result,
+          message: "Employee data Updated successfully",
+        });
+      } else {
+        res.send({
+          success: false,
+          statusCode: 404,
+          message: "no data available",
+        });
+      }
+    } catch (error) {
       res.send({
         success: false,
-        statusCode: 404,
-        message: "no data available",
+        statusCode: 500,
+        message: error,
       });
     }
-  } catch (error) {
+  } else {
     res.send({
       success: false,
-      statusCode: 500,
-      message: error,
+      statusCode: 404,
+      message: "Enter Valid data",
     });
   }
 };
@@ -277,7 +313,6 @@ const changePasswordData = async (req, res) => {
 
 const getSingleEmployeeData = async (req, res) => {
   const result = await getSingleEmployeeService(req.params.id);
-  console.log(result.length);
   try {
     if (result.length === 1) {
       res.send({

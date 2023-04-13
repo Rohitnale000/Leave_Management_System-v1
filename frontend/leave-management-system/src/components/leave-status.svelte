@@ -3,6 +3,7 @@
     import { navigate } from "svelte-routing";    
     import { storeData } from "../store/store";
     import ApplyForLeave from "../controllers/employee"
+  import DashboardNavbar from "./shared/dashboard-navbar.svelte";
    
     const LeaveClassObj = new ApplyForLeave()
    // let loginUserObject={}
@@ -21,7 +22,7 @@ let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
 
 </script>
  
-
+<DashboardNavbar/>
  <div class="container-fluid mt-5">
     <div class="table-responsive">
         <div class="table-wrapper">

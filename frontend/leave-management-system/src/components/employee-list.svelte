@@ -1,121 +1,145 @@
 <script>
-    import Icon from "@iconify/svelte";
-    import { storeData } from "../store/store";
-    import { onMount } from "svelte";
-    import createEmployee from "../controllers/manager";
-    //create a class instance//
-    const listofEmp = new createEmployee();
-    //get manager email id from store//
-    let managerEmailId;
-    storeData.subscribe((value) => {
-      managerEmailId = value.data.email_id;
-    });
-    console.log(managerEmailId);
-    //store result from services into array//
-    let listArray=[] ;
-    let totalRecords ="";
-    let recordsOnPage = "";
-    let totalCount= 0;
-    let limit=2;
-    //call class method getEmployeeList and pass email,page from it//
-    $:page =1
-    onMount(async() => {
-     const result= await listofEmp.getEmployeeList(managerEmailId,page);
-      console.log(await result);
-      listArray=result.data;
-      recordsOnPage= listArray.length;
-      totalCount = result.totalCount;
-      console.log(totalRecords);
-      totalPages = Math.ceil(totalCount/limit);
-      // recordsOnPage = Math.ceil(totalRecords/2);
-      console.log(recordsOnPage,"recordson page")
-     console.log(await listArray,"im listaray");
-    });
-  </script>
-  <div class="container-xl">
-    <div class="table-responsive">
-      <div class="table-wrapper">
-        <div class="table-title mt-3">
-          <div class="row">
-            <div class="col-sm-8 mb-4" style="color:green">
-              <h2>Employee <b>List</b></h2>
-            </div>
-            <div class="col-sm-4">
-              <div class="search-box">
-                <input type="text" class="form-control" placeholder="Search…" />
+import { onMount } from "svelte";
+import ApplyForLeave from "../controllers/employee"
+import { paginate, LightPaginationNav} from 'svelte-paginate'
+import DashboardNavbar from "./shared/dashboard-navbar.svelte";
+import toast, { Toaster } from "svelte-french-toast";
+import { dialogs } from "svelte-dialogs";
+import { navigate } from "svelte-routing";
+
+const LeaveClassObj = new ApplyForLeave()
+let loginUserObject= JSON.parse(sessionStorage.getItem('data'));
+let items=[];
+let currentPage = 1
+let pageSize = 2
+let flag= false;
+let searchInput="";
+
+$: paginatedItems = paginate({ items, pageSize, currentPage })
+
+try {
+  onMount(async()=>{
+   const result = await LeaveClassObj.getEmployeeList(loginUserObject.email_id)
+   if(result.statusCode===200){
+
+    items =await result.data;
+   }else{
+      flag=true
+   } 
+  }) 
+} catch (error) {
+  console.log(error);
+}
+
+
+const handleDelete= async(data)=>{
+  let output = await dialogs.prompt({ label: "Enter reason for delete this record", type: "text",required: true});
+  if(output===null){
+    return
+  }
+
+  const result1 = await LeaveClassObj.deleteEmployee(data.emp_id,output[0])
+  if(result1.statusCode===200){
+    toast.success(result1.message)
+    const result = await LeaveClassObj.getEmployeeList(loginUserObject.email_id)
+    if(result.statusCode===200){
+      items = (result.data); 
+    }
+    else if(result.statusCode===404){
+      flag=true
+    }
+  }else if(result1.statusCode==404){
+    flag=true
+  }
+}
+
+
+const handleSearch =async(e)=>{
+  if(e.key==='Enter'){
+    if(searchInput.trim().length===0){
+      flag=true;
+      return
+    }
+    
+  const result = await LeaveClassObj.searchEmployee(searchInput,loginUserObject.email_id);
+  if(result.statusCode===302){
+      items = (result.data); 
+    }
+    else if(result.statusCode===404){
+      flag=true
+    }
+  }
+}
+
+const handleUpdate=async(data)=>{
+  navigate(`/update-employee/${data.emp_id}`)
+}
+</script> 
+<Toaster />
+<DashboardNavbar/>
+<main>
+            {#if flag===false}
+            <div class="container-fluid mt-3 pt-5 ">
+              <div class="form-outline mb-2">
+                <input type="search" id="form1" class="form-control" placeholder="Search + Enter" aria-label="Search" bind:value={searchInput} on:keypress={handleSearch} autocomplete="off"/>
               </div>
+
+              <table class="table table-striped table-hover table-bordered  table-responsive ">
+                  <thead>
+                      <tr>
+                          <th>Name</th>
+                          <th>Contact No  </th>
+                          <th>Department</th>
+                          <th>Designation</th>
+                          <th>Email</th>
+                          <th>Role</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {#each paginatedItems as i}
+                    <tr>
+                      <td>{i.first_name +" "+ i.last_name}</td>
+                      <td>{i.contact_no}</td>
+                      <td>{i.department}</td>
+                      <td>{i.designation}</td>
+                      <td>{i.email_id}</td>
+                      <td>{i.emp_role}</td>
+                      <td >
+                          <span>
+                            <button class="btn btn-success me-2" type="button" on:click={handleUpdate(i)}>Update</button>
+                            <button class="btn btn-danger" type="button" on:click={handleDelete(i)}>Delete</button>
+                          </span>
+                      </td>
+                  </tr> 
+                    {/each}
+                  </tbody>
+              </table> 
+              <div class="ml-3 col-md-3 mb-3 w-100 d-flex justify-content-between">
+                <LightPaginationNav 
+                totalItems="{items.length}"
+                pageSize="{pageSize}"
+                currentPage="{currentPage}"
+                limit="{1}"
+                showStepOptions="{true}"
+                on:setPage="{(e) => currentPage = e.detail.page}"
+              /> 
+              <button class="btn btn-dark" type="button" on:click={()=>{navigate('/manager-dashboard')}}>Back</button>
             </div>
-          </div>
-        </div>
-        <table class="table table-striped table-hover table-bordered">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name </th>
-              <th>Email Id</th>
-              <th>Department </th>
-              <th>Designation</th>
-              <th>Date of Joining </th>
-              <th>Contact No</th>
-              <th>Role</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each listArray as emp}
-            <tr>
-              <td>1</td>
-              <td>{emp.first_name}</td>
-              <td>{emp.email_id}</td>
-              <td>{emp.department}</td>
-              <td>{emp.designation}</td>
-              <td>{emp.joining_date}</td>
-              <td>{emp.contact_no}</td>
-              <td>{emp.emp_role}</td>
-              <td>
-                <a
-                  href="#"
-                  class="edit"
-                  title=""
-                  data-toggle="tooltip"
-                  data-original-title="Edit"
-                  ><Icon
-                    icon="ph:pencil-line-fill"
-                    color="#FFDE5D"
-                    width="30"
-                  /></a
-                >
-                <a
-                  href="#"
-                  class="delete"
-                  title=""
-                  data-toggle="tooltip"
-                  data-original-title="Delete"
-                  ><Icon icon="ic:twotone-delete" color="crimson" width="30" />
-                </a>
-              </td>
-            </tr>
-            {/each}
-          </tbody>
-        </table>
-        <div class="clearfix">
-          <div class="hint-text">Showing <b>{recordsOnPage}</b> out of <b>{totalCount}</b> entries</div>
-          <ul class="pagination">
-            <li class="page-item disabled">
-              <a href="#"><i class="fa fa-angle-double-left" /></a>
-            </li>
-            <li class="page-item"><a href="#" class="page-link">1</a></li>
-            <li class="page-item"><a href="#" class="page-link">2</a></li>
-            <li class="page-item active"><a href="#" class="page-link">3</a></li>
-            <li class="page-item"><a href="#" class="page-link">4</a></li>
-            <li class="page-item"><a href="#" class="page-link">5</a></li>
-            <li class="page-item">
-              <a href="#" class="page-link"
-                ><i class="fa fa-angle-double-right" /></a
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+            </div>           
+            {:else}
+               <h1>There is no records available</h1>
+            {/if}
+          
+</main>
+
+<style>
+  h1{
+    margin-top: 10%;
+    text-align: center;
+  }
+  .form-outline{
+    border-radius:3px;
+    border: 1px solid #0d6efd
+  } 
+</style>

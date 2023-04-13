@@ -14,7 +14,9 @@ const employeeRouter = require("./routes/employee.js");
 //leave application router
 const leaveAppRouter = require("./routes/leave-application.js");
 //leave-type router
-const leaveTypeRouter = require("./routes/leave-type")
+const leaveTypeRouter = require("./routes/leave-type");
+//manager router
+const managerRouter = require("./routes/manager.js");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -34,7 +36,11 @@ app.use("/", employeeRouter);
 app.use("/", leaveAppRouter);
 
 //leave-type router
-app.use("/",leaveTypeRouter)
+app.use("/", leaveTypeRouter);
+
+//manager router
+app.use("/", managerRouter);
+
 dotenv.config({ path: "./config" + "/.env" });
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port number..${process.env.PORT}`);

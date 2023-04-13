@@ -6,6 +6,7 @@
     import { isValidDateOfBirth } from "../utils/index";
     import toast, { Toaster } from "svelte-french-toast";
     import { Confirm } from 'svelte-confirm';
+  import DashboardNavbar from "./shared/dashboard-navbar.svelte";
     let errors = {
       nameError: "",
       lastNameError: "",
@@ -101,6 +102,7 @@
     };
   </script>
   <Toaster />
+  <DashboardNavbar/>
 {#if result}
 <section>
     <meta charset="utf-8" />

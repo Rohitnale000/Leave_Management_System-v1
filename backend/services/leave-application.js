@@ -8,6 +8,7 @@ const { sequelize } = require("../models/connection");
 const applicationDetailsDb = db.leaveApplications;
 const employeeDetailsDb = db.employeeDetails;
 const leaveTypeDb = db.leaveTypes;
+const { Op } = require("sequelize");
 
 exports.createLeaveApplicationService = async (bodyData) => {
   //console.log(bodyData);
@@ -338,6 +339,21 @@ exports.getLeaveStatusService = async (paramsId) => {
       where: { emp_id: paramsId },
     });
     console.log(queryResult.dataValues);
+    return queryResult;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.searchLeaveAppService = async (data, email) => {
+  try {
+    const queryResult = await sequelize.query(
+      `select * FROM leave_applications
+       INNER JOIN employee_details 
+       ON leave_applications.emp_id  = employee_details.emp_id where leave_applications.reporting_manager_email ILIKE '%${email}%' and leave_applications.leave_status ILIKE '%${data}%'`,
+      { type: QueryTypes.SELECT }
+    );
+    console.log(queryResult);
     return queryResult;
   } catch (error) {
     console.log(error);

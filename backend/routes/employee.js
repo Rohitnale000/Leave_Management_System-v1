@@ -15,7 +15,7 @@ router.post("/employee", createNewEmployeeData);
 
 router.put("/employee/:id", updateEmployeeData);
 
-router.get("/employee/:email", searchEmployeeData);
+router.get("/employee", searchEmployeeData);
 
 router.get("/:email/employee", employeePaginationData);
 

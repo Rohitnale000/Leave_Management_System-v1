@@ -5,6 +5,7 @@ const {
   approveLeaveData,
   rejectLeaveData,
   leaveStatusData,
+  searchLeaveData,
 } = require("../controllers/leave-application");
 
 const router = express.Router();
@@ -19,4 +20,5 @@ router.put("/leave/:id", rejectLeaveData);
 
 router.get("/leave/:id", leaveStatusData);
 
+router.get("/leave", searchLeaveData);
 module.exports = router;

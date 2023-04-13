@@ -1,16 +1,11 @@
 <script>
-  // import Sidebar from './../components/shared/sidebar.svelte';
-
-// import CreateEmployee from "../components/create-employee.svelte";
-  import Navigation from '../components/shared/navigation.svelte';
+  //import Navigation from '../components/shared/navigation.svelte';
   import LeaveHistory from '../components/leave-history.svelte';
   import SidebarEmployee from '../components/shared/sidebar-employee.svelte';
-// import CreateEmployee from "../components/create-employee.svelte";
+  import DashboardNavbar from '../components/shared/dashboard-navbar.svelte';
 </script>
 <main>
- 
-<!-- <CreateEmployee/> -->
-<Navigation/>
+<DashboardNavbar/>
 <SidebarEmployee/>
 <LeaveHistory/>
 </main>

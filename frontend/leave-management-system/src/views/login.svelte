@@ -2,17 +2,13 @@
   import Icon from "@iconify/svelte";
   import { loginController } from "../controllers/login";
   import { navigate } from "svelte-routing";
-  // import Sidebar from "../components/shared/sidebar.svelte";
-  import Navigation from "../components/shared/navigation.svelte";
   import { storeData } from "../store/store";
   import toast, { Toaster } from "svelte-french-toast";
-  import { checkName, checkEmail } from "../utils/index";
-  // import { checkEmail, checkPassword } from "../utils/index";
+  import DashboardNavbar from "../components/shared/dashboard-navbar.svelte";
+  
   let emailId = "";
   let password = "";
   let writeInStore;
-  // let error_boolean = false;
-  //validation//
   let errors = { emailError: "", passwordError: ""};
   let valid = false;
   //function handleSubmit for handling submitted data and route that data based on different conditions//
@@ -45,9 +41,9 @@
     if (valid) {
 
       const submitResponse = await loginController(emailId, password);
-      //console.log(submitResponse);
-      //writeInStore = await submitResponse;
-      //let data = storeData.set(await writeInStore);
+      console.log(submitResponse);
+      writeInStore = await submitResponse;
+      let data = storeData.set(await writeInStore);
       console.log(submitResponse.data)
       sessionStorage.setItem('data', JSON.stringify(submitResponse.data));
      
@@ -87,7 +83,7 @@
 </script>
 <Toaster />
 <main>
-  <Navigation />
+ <DashboardNavbar/>
   <div
     class="d-flex justify-content-center align-items-center mt-1"
     style="height: 90vh;"
@@ -167,9 +163,6 @@
     text-align: center;
   }
   .star {
-    color: red;
-  }
-  .error-div {
     color: red;
   }
   .error{
